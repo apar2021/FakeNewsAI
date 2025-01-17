@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection</title>
+</head>
+<body>
+    <h1>Fake News Detection</h1>
+    <form id="news-form">
+        <textarea id="news-text" rows="10" cols="50" placeholder="Paste news article here..."></textarea><br><br>
+        <button type="submit">Classify News</button>
+    </form>
+    <h2>Result:</h2>
+    <div id="result">
+        <!-- Prediction will appear here -->
+    </div>
+
+    <script>
+        const form = document.getElementById('news-form');
+        const newsText = document.getElementById('news-text');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const text = newsText.value;
+            if (!text) {
+                alert('Please enter some text');
+                return;
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+                resultDiv.innerHTML = `<strong>Label:</strong> ${data.label}<br><strong>Confidence:</strong> ${data.confidence}`;
+            } catch (error) {
+                resultDiv.innerHTML = 'Error processing the request.';
+            }
+        });
+    </script>
+</body>
+</html>
